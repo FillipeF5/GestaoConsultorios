@@ -15,6 +15,13 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
 
   const cotasMemorizadas = useMemo(() => cotas, [cotas]);
 
+  const horarios = [
+    '7h às 10h',
+    '10h às 13h',
+    '13h às 16h',
+    '16h às 19h'
+  ];
+
   const adicionarMedicoNaCota = (index, medico) => {
     const novasCotas = [...cotas];
     if (!novasCotas[index]) {
@@ -60,9 +67,9 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
               fontWeight="bold"
               transition="background 0.3s"
             >
-              <span>Cota {index + 1}: {medico || 'Livre'}</span>
+              <span>{index + 1} - {horarios[index]} - {medico || 'livre'}</span>
               <Button
-                colorScheme="blue"
+                colorScheme="teal"
                 size="sm"
                 onClick={() => {
                   if (medico) {
@@ -89,11 +96,11 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
           <ModalBody maxHeight="60vh" overflowY="auto">
             {tipoOcupacao === null ? (
               // Estado inicial, pergunta sobre "Reserva" ou "Escala Padrão"
-              <VStack spacing={4}>
-                <Button onClick={() => setTipoOcupacao('reserva')}>
+              <VStack spacing={5}>
+                <Button onClick={() => setTipoOcupacao('reserva')} boxShadow="xl" colorScheme='teal'>
                   Reserva
                 </Button>
-                <Button onClick={() => setTipoOcupacao('escala')}>
+                <Button onClick={() => setTipoOcupacao('escala')} boxShadow="xl" colorScheme='teal' mb="4">
                   Escala Padrão
                 </Button>
               </VStack>

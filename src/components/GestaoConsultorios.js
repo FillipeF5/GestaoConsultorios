@@ -60,6 +60,26 @@ const GestaoConsultorios = () => {
 
   return (
     <Box p={4}>
+
+      <Tabs isFitted variant="enclosed">
+        <TabList>
+          <Tab>Janeiro</Tab>
+          <Tab>Fevereiro</Tab>
+          <Tab>Março</Tab>
+          <Tab>Abril</Tab>
+          <Tab>Maio</Tab>
+          <Tab>Junho</Tab>
+          <Tab>Julho</Tab>
+          <Tab>Agosto</Tab>
+          <Tab>Setembro</Tab>
+          <Tab>Outubro</Tab>
+          <Tab>Novembro</Tab>
+          <Tab>Dezembro</Tab>
+        </TabList>
+      </Tabs>
+
+
+
       <Tabs variant="soft-rounded" colorScheme="green">
         <TabList>
           <Tab>Segunda</Tab>
@@ -82,7 +102,7 @@ const GestaoConsultorios = () => {
                   {['UnidadeI', 'UnidadeII', 'UnidadeIII'].map((unidade) => (
                     <TabPanel key={unidade}>
                       <Heading size="md" mb={4}>{unidade}</Heading>
-                      <Button colorScheme="green" mb={4} onClick={() => adicionarConsultorio(unidade, dia)}>
+                      <Button colorScheme="teal" mb={4} onClick={() => adicionarConsultorio(unidade, dia)}>
                         Adicionar Consultório
                       </Button>
                       <VStack spacing={4} align="stretch">
@@ -114,7 +134,7 @@ const GestaoConsultorios = () => {
                 <span>{medico}</span>
                 <IconButton
                   icon={<DeleteIcon />}
-                  colorScheme="red"
+                  color="red.300"
                   size="sm"
                   onClick={() => {
                     setMedicos((prevMedicos) => prevMedicos.filter((_, i) => i !== index));
