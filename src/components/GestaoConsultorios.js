@@ -1,6 +1,7 @@
 // src/components/GestaoConsultorios.js
 import React, { useState, useCallback } from 'react';
-import { Box, Button, VStack, Heading, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import { Box, Button, VStack, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Grid, IconButton } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons';
 import ConsultorioCard from './ConsultorioCard';
 import InputMedico from './InputMedico';
 
@@ -11,17 +12,17 @@ const GestaoConsultorios = () => {
   ]);
 
   const criarUnidades = () => ({
-    Ipatinga: Array(12).fill().map((_, i) => ({
+    UnidadeI: Array(12).fill().map((_, i) => ({
       numero: i + 1,
       especialidade: '',
       cotas: Array(4).fill(null)
     })),
-    Fabriciano: Array(6).fill().map((_, i) => ({
+    UnidadeII: Array(6).fill().map((_, i) => ({
       numero: i + 1,
       especialidade: '',
       cotas: Array(4).fill(null)
     })),
-    Timoteo: Array(6).fill().map((_, i) => ({
+    UnidadeIII: Array(6).fill().map((_, i) => ({
       numero: i + 1,
       especialidade: '',
       cotas: Array(4).fill(null)
@@ -73,12 +74,12 @@ const GestaoConsultorios = () => {
               <Heading size="md" mb={4}>Consultórios - {dia.charAt(0).toUpperCase() + dia.slice(1)}</Heading>
               <Tabs variant="enclosed" colorScheme="green">
                 <TabList>
-                  <Tab>Ipatinga</Tab>
-                  <Tab>Fabriciano</Tab>
-                  <Tab>Timoteo</Tab>
+                  <Tab>UnidadeI</Tab>
+                  <Tab>UnidadeII</Tab>
+                  <Tab>UnidadeIII</Tab>
                 </TabList>
                 <TabPanels>
-                  {['Ipatinga', 'Fabriciano', 'Timoteo'].map((unidade) => (
+                  {['UnidadeI', 'UnidadeII', 'UnidadeIII'].map((unidade) => (
                     <TabPanel key={unidade}>
                       <Heading size="md" mb={4}>{unidade}</Heading>
                       <Button colorScheme="green" mb={4} onClick={() => adicionarConsultorio(unidade, dia)}>
@@ -106,18 +107,30 @@ const GestaoConsultorios = () => {
       <VStack spacing={4} align="stretch" mt={8}>
         <Heading size="lg">Médicos</Heading>
         <InputMedico onAddMedico={adicionarMedico} />
-        <VStack spacing={2} mt={4}>
+        <Grid templateColumns="repeat(5, 1fr)" gap={4} mt={4}>
           {medicos.length > 0 ? (
             medicos.map((medico, index) => (
-              <Box key={index} display="flex" justifyContent="space-between" alignItems="center">
+              <Box key={index} display="flex" justifyContent="space-between" alignItems="center" boxShadow="xl" p={2} >
                 <span>{medico}</span>
+                <IconButton
+                  icon={<DeleteIcon />}
+                  colorScheme="red"
+                  size="sm"
+                  onClick={() => {
+                    setMedicos((prevMedicos) => prevMedicos.filter((_, i) => i !== index));
+                  }}
+                  aria-label="Excluir médico"
+                />
               </Box>
             ))
           ) : (
             <span>Nenhum médico adicionado.</span>
           )}
-        </VStack>
+        </Grid>
       </VStack>
+
+
+
     </Box>
   );
 };

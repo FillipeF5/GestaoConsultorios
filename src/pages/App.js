@@ -8,7 +8,7 @@ const App = () => {
   return (
     <ChakraProvider>
       <div>
-        <Heading bg="green.800" color="white" mb={4} padding='16px'>Gestão de Consultórios e Médicos</Heading>
+        <Heading bg="green.800" color="white" mb={4} padding='16px'>Gestão de Consultórios</Heading>
         
         <Tabs variant="soft-rounded" colorScheme="green">
           <TabPanels>
