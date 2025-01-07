@@ -1,9 +1,22 @@
-// src/components/ConsultorioCard.js
-import React, { useState, useMemo } from 'react';
-import { Box, Heading, VStack, IconButton, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Grid, Input } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+  Box,
+  Heading,
+  VStack,
+  IconButton,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Grid,
+  Input,
+} from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 
-const ConsultorioCard = ({ consultorio, medicos }) => {
+const ConsultorioCard = React.memo(({ consultorio, medicos }) => {
   const [expandido, setExpandido] = useState(true);
   const [cotas, setCotas] = useState(consultorio.cotas);
   const [modalOpen, setModalOpen] = useState(false);
@@ -13,24 +26,16 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
   const [tipoOcupacao, setTipoOcupacao] = useState(null); // 'escala' ou 'reserva'
   const [reservaData, setReservaData] = useState('');
 
-  const cotasMemorizadas = useMemo(() => cotas, [cotas]);
-
   const horarios = [
     '7h às 10h',
     '10h às 13h',
     '13h às 16h',
-    '16h às 19h'
+    '16h às 19h',
   ];
 
   const adicionarMedicoNaCota = (index, medico) => {
     const novasCotas = [...cotas];
-    if (!novasCotas[index]) {
-      novasCotas[index] = medico; // Adiciona o médico à cota
-      console.log(`Médico ${medico} adicionado à Cota ${index + 1}`);
-    } else {
-      novasCotas[index] = null; // Remove o médico da cota
-      console.log(`Cota ${index + 1} liberada.`);
-    }
+    novasCotas[index] = medico; // Adiciona o médico à cota (ou remove)
     setCotas(novasCotas);
   };
 
@@ -40,7 +45,7 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
   );
 
   return (
-    <Box borderWidth="1px" borderRadius="md" p={4} mb={4} boxShadow="md">
+    <Box borderWidth="1px" borderRadius="md" p={4} mb={4} boxShadow="md" backgroundColor={'yellow.50'}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Heading size="md">Consultório {consultorio.numero}</Heading>
         <IconButton
@@ -53,7 +58,7 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
 
       {expandido && (
         <VStack spacing={2} align="stretch" mt={2}>
-          {cotasMemorizadas.map((medico, index) => (
+          {cotas.map((medico, index) => (
             <Box
               key={index}
               display="flex"
@@ -105,25 +110,22 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
                 </Button>
               </VStack>
             ) : (
-              // Se tipo de ocupação foi selecionado
               <>
                 {tipoOcupacao === 'reserva' && (
                   <Input
                     placeholder="Data da reserva"
                     value={reservaData}
                     onChange={(e) => setReservaData(e.target.value)}
-                    mb={4} // Espaçamento abaixo do input de data
+                    mb={4}
                   />
                 )}
-
                 {/* Barra de pesquisa */}
                 <Input
                   placeholder="Pesquisar médico..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  mb={4} // Espaçamento abaixo da barra de pesquisa
+                  mb={4}
                 />
-
                 {/* Lista de médicos */}
                 <Grid templateColumns="repeat(4, 1fr)" gap={5}>
                   {filteredMedicos.map((medico, index) => (
@@ -133,9 +135,7 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
                         const ocupacao = tipoOcupacao === 'reserva'
                           ? `${medico}, reservado, ${reservaData}`
                           : medico;
-
                         adicionarMedicoNaCota(cotaSelecionada, ocupacao);
-
                         // Resetando o estado da modal ao fechar
                         setTipoOcupacao(null);
                         setReservaData('');
@@ -154,10 +154,8 @@ const ConsultorioCard = ({ consultorio, medicos }) => {
           </ModalBody>
         </ModalContent>
       </Modal>
-
-
     </Box>
   );
-};
+});
 
 export default ConsultorioCard;

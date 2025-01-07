@@ -1,156 +1,148 @@
-// src/components/GestaoConsultorios.js
-import React, { useState, useCallback } from 'react';
-import { Box, Button, VStack, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Grid, IconButton } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
-import ConsultorioCard from './ConsultorioCard';
-import InputMedico from './InputMedico';
+import React, { lazy, Suspense } from 'react';
+import { DeleteIcon } from '@chakra-ui/icons'; // Corrigida a importação
+import {
+  Box,
+  Button,
+  VStack,
+  Heading,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Spinner,
+  SimpleGrid,
+  IconButton,
+  Text,
+} from '@chakra-ui/react';
+import useMedicos from '../hooks/useMedicos';
+import useDias from '../hooks/useDias';
+import useMeses from '../hooks/useMeses';
+
+const ConsultorioCard = lazy(() => import('./ConsultorioCard'));
+const InputMedico = lazy(() => import('./InputMedico'));
+
+const UnidadeTab = ({ unidade, estadoUnidade, medicos }) => (
+  <TabPanel>
+    <Heading size="md" mb={4}>{unidade}</Heading>
+    <Button
+      colorScheme="teal"
+      mb={4}
+      onClick={() => estadoUnidade.adicionarConsultorio(unidade)}
+    >
+      Adicionar Consultório
+    </Button>
+    <VStack spacing={4} align="stretch">
+      {estadoUnidade.unidades[unidade].map((consultorio) => (
+        <Suspense key={consultorio.numero} fallback={<Spinner size="xl" />}>
+          <ConsultorioCard
+            consultorio={consultorio}
+            medicos={medicos}
+          />
+        </Suspense>
+      ))}
+    </VStack>
+  </TabPanel>
+);
+
+const DiaTab = ({ dia, estadoDia, medicos }) => (
+  <TabPanel>
+    <Heading size="md" mb={4}>Consultórios - {dia.charAt(0).toUpperCase() + dia.slice(1)}</Heading>
+    <Tabs variant="enclosed" colorScheme="green">
+      <TabList>
+        <Tab>UnidadeI</Tab>
+        <Tab>UnidadeII</Tab>
+        <Tab>UnidadeIII</Tab>
+      </TabList>
+      <TabPanels>
+        {['UnidadeI', 'UnidadeII', 'UnidadeIII'].map((unidade) => (
+          <UnidadeTab key={unidade} unidade={unidade} estadoUnidade={estadoDia} medicos={medicos} />
+        ))}
+      </TabPanels>
+    </Tabs>
+  </TabPanel>
+);
 
 const GestaoConsultorios = () => {
-  const [medicos, setMedicos] = useState([
-    'Dr. Silva', 'Dra. Pereira', 'Dr. Oliveira', 'Dra. Costa', 'Dr. Santos',
-    'Dr. Cardoso', 'Dra. Lima', 'Dr. Almeida', 'Dra. Barbosa', 'Dr. Teixeira'
-  ]);
-
-  const criarUnidades = () => ({
-    UnidadeI: Array(12).fill().map((_, i) => ({
-      numero: i + 1,
-      especialidade: '',
-      cotas: Array(4).fill(null)
-    })),
-    UnidadeII: Array(6).fill().map((_, i) => ({
-      numero: i + 1,
-      especialidade: '',
-      cotas: Array(4).fill(null)
-    })),
-    UnidadeIII: Array(6).fill().map((_, i) => ({
-      numero: i + 1,
-      especialidade: '',
-      cotas: Array(4).fill(null)
-    }))
-  });
-
-  const [unidades, setUnidades] = useState({
-    segunda: criarUnidades(),
-    terca: criarUnidades(),
-    quarta: criarUnidades(),
-    quinta: criarUnidades(),
-    sexta: criarUnidades(),
-  });
-
-  const adicionarMedico = useCallback((novoMedico) => {
-    setMedicos((prevMedicos) => [...prevMedicos, novoMedico]);
-  }, []);
-
-  const adicionarConsultorio = (unidade, dia) => {
-    setUnidades((prevUnidades) => {
-      const novaListaConsultorios = [...prevUnidades[dia][unidade], {
-        numero: prevUnidades[dia][unidade].length + 1,
-        especialidade: '',
-        cotas: Array(4).fill(null)
-      }];
-      return {
-        ...prevUnidades,
-        [dia]: {
-          ...prevUnidades[dia],
-          [unidade]: novaListaConsultorios
-        }
-      };
-    });
-  };
+  const { medicos, adicionarMedico, removerMedico } = useMedicos(); // Adicionei removerMedico
+  const estadoDias = useDias();
+  const { monthNames, loadedMonths, handleTabClick } = useMeses();
 
   return (
-    <Box p={4}>
-
-      <Tabs isFitted variant="enclosed">
-        <TabList>
-          <Tab>Janeiro</Tab>
-          <Tab>Fevereiro</Tab>
-          <Tab>Março</Tab>
-          <Tab>Abril</Tab>
-          <Tab>Maio</Tab>
-          <Tab>Junho</Tab>
-          <Tab>Julho</Tab>
-          <Tab>Agosto</Tab>
-          <Tab>Setembro</Tab>
-          <Tab>Outubro</Tab>
-          <Tab>Novembro</Tab>
-          <Tab>Dezembro</Tab>
-        </TabList>
-      </Tabs>
-
-
-
+    <Box backgroundColor={'green.50'} p={4}>
       <Tabs variant="soft-rounded" colorScheme="green">
         <TabList>
-          <Tab>Segunda</Tab>
-          <Tab>Terça</Tab>
-          <Tab>Quarta</Tab>
-          <Tab>Quinta</Tab>
-          <Tab>Sexta</Tab>
+          {monthNames.map((monthName, index) => (
+            <Tab key={index} onClick={() => handleTabClick(index)}>{monthName}</Tab>
+          ))}
         </TabList>
+
         <TabPanels>
-          {['segunda', 'terca', 'quarta', 'quinta', 'sexta'].map((dia) => (
-            <TabPanel key={dia}>
-              <Heading size="md" mb={4}>Consultórios - {dia.charAt(0).toUpperCase() + dia.slice(1)}</Heading>
-              <Tabs variant="enclosed" colorScheme="green">
-                <TabList>
-                  <Tab>UnidadeI</Tab>
-                  <Tab>UnidadeII</Tab>
-                  <Tab>UnidadeIII</Tab>
-                </TabList>
-                <TabPanels>
-                  {['UnidadeI', 'UnidadeII', 'UnidadeIII'].map((unidade) => (
-                    <TabPanel key={unidade}>
-                      <Heading size="md" mb={4}>{unidade}</Heading>
-                      <Button colorScheme="teal" mb={4} onClick={() => adicionarConsultorio(unidade, dia)}>
-                        Adicionar Consultório
-                      </Button>
-                      <VStack spacing={4} align="stretch">
-                        {unidades[dia][unidade].map((consultorio) => (
-                          <ConsultorioCard
-                            key={consultorio.numero}
-                            consultorio={consultorio}
-                            medicos={medicos}
-                            onSave={() => console.log('Salvar edição')}
-                          />
-                        ))}
-                      </VStack>
-                    </TabPanel>
-                  ))}
-                </TabPanels>
-              </Tabs>
+          {monthNames.map((monthName, index) => (
+            <TabPanel key={index}>
+              {loadedMonths[index] ? (
+                <Suspense fallback={<Spinner size="xl" />}>
+                  <Tabs variant="soft-rounded" colorScheme="green">
+                    <TabList>
+                      {Object.keys(estadoDias).map((dia) => (
+                        <Tab key={dia}>{dia.charAt(0).toUpperCase() + dia.slice(1)}</Tab>
+                      ))}
+                    </TabList>
+                    <TabPanels>
+                      {Object.keys(estadoDias).map((dia) => (
+                        <DiaTab key={dia} dia={dia} estadoDia={estadoDias[dia]} medicos={medicos} />
+                      ))}
+                    </TabPanels>
+                  </Tabs>
+                </Suspense>
+              ) : (
+                <Spinner size="xl" />
+              )}
             </TabPanel>
           ))}
         </TabPanels>
       </Tabs>
 
-      <VStack spacing={4} align="stretch" mt={8}>
-        <Heading size="lg">Médicos</Heading>
+      {/* Seção para adicionar médico */}
+      <Suspense fallback={<Spinner size="xl" />}>
         <InputMedico onAddMedico={adicionarMedico} />
-        <Grid templateColumns="repeat(5, 1fr)" gap={4} mt={4}>
-          {medicos.length > 0 ? (
-            medicos.map((medico, index) => (
-              <Box key={index} display="flex" justifyContent="space-between" alignItems="center" boxShadow="xl" p={2} >
-                <span>{medico}</span>
-                <IconButton
-                  icon={<DeleteIcon />}
-                  color="red.300"
-                  size="sm"
-                  onClick={() => {
-                    setMedicos((prevMedicos) => prevMedicos.filter((_, i) => i !== index));
-                  }}
-                  aria-label="Excluir médico"
-                />
-              </Box>
-            ))
-          ) : (
-            <span>Nenhum médico adicionado.</span>
-          )}
-        </Grid>
-      </VStack>
+      </Suspense>
 
-
-
+      {/* Lista de Médicos Cadastrados */}
+      <Heading size="md" mt={4} mb={2}>Médicos Cadastrados</Heading>
+      <SimpleGrid columns={[1, 2, 3, 4]} spacing={4} mt={4}>
+        {medicos.length > 0 ? (
+          medicos.map((medico, index) => (
+            <Box
+              key={index}
+              borderWidth="1px"
+              borderRadius="md"
+              backgroundColor={'green.50'}
+              boxShadow="sm"
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              flexDirection="column"
+              textAlign="center"
+            >
+              <Text fontWeight="bold">{medico}
+              <IconButton
+                icon={<DeleteIcon />}
+                margin={2}
+                colorScheme="red"
+                size="sm"
+                aria-label="Remover Médico"
+                onClick={() => removerMedico(index)}
+              />
+              </Text>
+            </Box>
+          ))
+        ) : (
+          <Box textAlign="center" color="gray.500" gridColumn="span 4">
+            Nenhum médico cadastrado.
+          </Box>
+        )}
+      </SimpleGrid>
     </Box>
   );
 };
